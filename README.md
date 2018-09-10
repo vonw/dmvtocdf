@@ -25,15 +25,5 @@ c1 = readDMV('/Users/vonw/data/paeri/raw/AE160602/160602C1.RNC')
 
 3) This should create an xarray Dataset called 'c1'.
 
-## Issues
-1) This first attempt at extracting the data from DMV files is incomplete. It currently only works well for RNC and RLC files, and is 
-probably quite "fragile".
-
-2) The number of housekeeping variables and data variables changes with different forms of DMV files (such as RNC, RLC, SUM files...). 
-Currently the Python code does not handle the different types well. For instance, RLC files appear to have 101 variables, while RNC
-files appear to have only 79. But is this true for all RLC and RNC files? Probably not. So future versions will need to decode how many
-variables are associated with each file, and then properly extract those variables. I believe that this was the purpose of the SSEC's
-OHWHIO library, which I think is a repository for all of the possible variables that could be saved into a DMV file. But I suspect that
-the files themselves must have information regarding their specific variables.
 
 Contact: Von P. Walden, v.walden@wsu.edu
