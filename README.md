@@ -17,10 +17,10 @@ export PYTHONPATH="/Users/vonw/work/software/paeri/dmvtocdf/:$PYTHONPATH"
 2) Then 
 
 ```python
-    # Import the readDMV function from the readDMV.py file.
-    from readDMV import readDMV
-    # Read a DMV file.
-    c1 = readDMV('/Users/vonw/data/paeri/raw/AE160602/160602C1.RNC')
+# Import the readDMV function from the readDMV.py file.
+from readDMV import readDMV
+# Read a DMV file.
+c1 = readDMV('/Users/vonw/data/paeri/raw/AE160602/160602C1.RNC')
 ```
 
 3) This should create an xarray Dataset called 'c1'.
