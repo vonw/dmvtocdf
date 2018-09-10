@@ -9,14 +9,17 @@ dataset as a netCDF file for future use.
 ## Usage
 
 1) Place the directory, 'dmvtocdf', on your local Python path. For instance, I added the following line to my .profile Bash script on my Mac.
-    export PYTHONPATH="/Users/vonw/work/software/paeri/dmvtocdf/:$PYTHONPATH"
+'''
+export PYTHONPATH="/Users/vonw/work/software/paeri/dmvtocdf/:$PYTHONPATH"
+'''
 
 2) Then 
+'''
     # Import the readDMV function from the readDMV.py file.
     from readDMV import readDMV
     # Read a DMV file.
     c1 = readDMV('/Users/vonw/data/paeri/raw/AE160602/160602C1.RNC')
-
+'''
 3) This should create an xarray Dataset called 'c1'.
 
 ## Issues
