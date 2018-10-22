@@ -25,5 +25,7 @@ c1 = readDMV('/Users/vonw/data/paeri/raw/AE160602/160602C1.RNC')
 
 3) This should create an xarray Dataset called 'c1'.
 
+4) readDMV.py can now decode RNC, RLC, and CXS files.
+
 
 Contact: Von P. Walden, v.walden@wsu.edu
