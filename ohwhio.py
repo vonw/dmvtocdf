@@ -5,11 +5,11 @@ Created on Sat Sep  8 14:36:23 2018
 @author: Von P. Walden, Washington State University
 """
 
-def getDMVformat(formatDependentRecord):
+def getDMVformat(extension):
     
     from collections import OrderedDict
     
-    if(formatDependentRecord == 0):
+    if((extension=='RNC') | (extension=='rnc') | (extension=='RLC') | (extension=='rlc')):
         variables = OrderedDict([
                      ('Time',OrderedDict([('longname','Time at center of AERI sky observation period'),('precision', '1E-4')])),
                      ('AERIunitNumber',OrderedDict([('longname', 'AERI instrument unit serial number'), ('units', 'count'),('precision', '1E0')])),
@@ -112,6 +112,79 @@ def getDMVformat(formatDependentRecord):
                      ('outputLaserWavenumber',OrderedDict([('longname','Laser wavenumber used in definition of output wavenumber scale'),('units', 'cm-1'),('precision', '1E-3')])),
                      ('originalInterferogramSize',OrderedDict([('longname','Size of buffer holding initial spectrum'),('units', '32-bit words'),('precision', '1E0')])),
                      ('expandedInterferogramSize',OrderedDict([('longname','Size of buffer holding expanded spectrum before interpolation'),('units', '32-bit words'),('precision', '1E0')]))])
+    elif((extension=='CXS') | (extension=='cxs')):
+        variables = OrderedDict([
+                     ('Time',OrderedDict([('longname','Time at center of AERI sky observation period'),('precision', '1E-4')])),
+                     ('AERIunitNumber',OrderedDict([('longname', 'AERI instrument unit serial number'), ('units', 'count'),('precision', '1E0')])),
+                     ('instrumentUnitNumber',OrderedDict([('longname','Character string containing instrument name'),('units', 'count'),('precision', '1e0')])),
+                     ('dateYYMMDD',OrderedDict([('longname', 'Observation date'),('units', 'year.month.day'),('precision', '1E0')])),
+                     ('timeHHMMSS',OrderedDict([('longname','Time at center of AERI sky observation period'),('units', 'hour.minute.second'),('precision', '1E0')])),
+                     ('Latitude',OrderedDict([('longname', 'Observation latitude'),('units', 'degrees_north'),('precision', '1E-2')])),
+                     ('Longitude',OrderedDict([('longname', 'Observation longitude'),('units', 'degrees_east'),('precision', '1E-2')])),
+                     ('Altitude',OrderedDict([('longname', 'Observation Altitude'),('units', 'feet'),('precision', '1E0')])),
+                     ('systemReleaseNumber',OrderedDict([('longname','Version number of Operational Software'),('units', 'count'),('precision', '1E-3')])),
+                     ('sceneViewDuration',OrderedDict([('longname', 'Duration of scene view'),('precision', '1E0')])),
+                     ('coadditionsCount',OrderedDict([('longname','Number of complete (forward+backward) interferogram scans in sample average'),('units', 'count'),('precision', '1E0')])),
+                     ('sceneMirrorPosition',OrderedDict([('longname','Instrument scene mirror position identifier'),('units', 'count'),('precision', '1E0')])),
+                     ('sceneMirPosCount',OrderedDict([('longname', 'Number of views in a sequence'),('units', 'count'),('precision', '1E-0')])),
+                     ('sceneMirPosEncoder',OrderedDict([('longname', 'Scene mirror position encoder value'),('units', 'count'),('precision', '1E0')])),
+                     ('JulianDay',OrderedDict([('longname','Julian Day including day and fraction of day'),('precision', '1E-5')])),
+                     ('ABBtopTemp',OrderedDict([('longname','Ambient blackbody temperature - rim top'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('ABBapexTemp',OrderedDict([('longname','Ambient blackbody temperature - apex'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('ABBbottomTemp',OrderedDict([('longname', 'Ambient blackbody temperature'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('HBBtopTemp',OrderedDict([('longname', 'Hot blackbody temperature - rim top'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('HBBapexTemp',OrderedDict([('longname', 'Hot blackbody temperature - apex'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('HBBbottomTemp',OrderedDict([('longname','Hot blackbody temperature - rim bottom'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('fixed2500ohmResistor',OrderedDict([('longname','Resistive temperature of 2500 Ohm fixed resistor - banana plug mounted'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('fixed97KohmResistor',OrderedDict([('longname','Resistive temperature of 97 Kohm fixed resistor located in SCE-P4 shell'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('outsideAirTemp',OrderedDict([('longname','Ambient air temperature at hatch opening'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('airNearInterferometerTemp',OrderedDict([('longname','Ambient air temperature near the interferometer'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('interferometerSecondPortTemp',OrderedDict([('longname','AERI interferometer temperature at second port'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('BBsupportStructureTemp',OrderedDict([('longname','Temperature of the AERI blackbody support structure'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('airNearBBsTemp',OrderedDict([('longname','Ambient air temperature near blackbodies'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('mirrorMotorTemp',OrderedDict([('longname', 'Scene mirror motor case temperature'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('sceneMirrorTemp',OrderedDict([('longname','Scene mirror temperature as measured at the center of the back of the mirror'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('fixed12KohmResistor',OrderedDict([('longname','Resistive temperature of 12 Kohm fixed resistor located in SCE-P3 shell'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('BBcontroller1temp',OrderedDict([('longname','Blackbody controller Unit 1 power supply temperature'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('BBcontroller2temp',OrderedDict([('longname','Blackbody controller Unit 2 power supply temperature'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('coolerCompressorTemp',OrderedDict([('longname','Stirling cooler compressor temperature measured at compressor heatsink'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('coolerExpanderTemp',OrderedDict([('longname','Stirling cycle cooler expander temperature'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('coolerPowerSupplyTemp',OrderedDict([('longname','Stirling cooler power supply temperature measured at power supply frame'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('rackAmbientTemp',OrderedDict([('longname','Electronics rack ambient temperature measured at inside top of rack'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('computerTemp',OrderedDict([('longname','AERI ingest computer temperature measured at back panel of computer'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('motorDriverTemp',OrderedDict([('longname','Scene mirror motor driver heat sink temperature'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('SCEtemp',OrderedDict([('longname','Signal conditioning electronics inside air temperature'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('coolerCurrent',OrderedDict([('longname', 'Stirling cycle cooler current'),('units', 'amperes'),('precision', '1E-3')])),
+                     ('detectorTemp',OrderedDict([('longname','Detector temperature sensed via diode near detector'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('rainSensorIntensity',OrderedDict([('longname','Rain sensor analog output: the rain sensor is located inside the hatch near the sky aperture and is used to flag the critical condition of rain falling on the AERI sky aperture. If rain is detected, the AERI scene mirror will be safed to the down looking p'),('units', 'millimeters/hour'),('precision', '1E0')])),
+                     ('interferometerWindowTemp',OrderedDict([('longname','Interferometer window temperature measured on the outside of the aluminum window flange'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('frontEndFanAirUnheatedTemp',OrderedDict([('longname','Interferometer front end fan airflow unheated temperature: used with heated temperature as measure of airflow.'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('frontEndFanAirHeatedTemp',OrderedDict([('longname','Interferometer front end fan airflow heated temperature: used with unheated temperature as measure of airflow.'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('spareTemp1',OrderedDict([])),
+                     ('atmosphericRelativeHumidity',OrderedDict([('longname','Relative humidity measured near Blackbodies. Use with Air Temperature Near BBs only.'),('units', '%'),('precision', '1E-1')])),
+                     ('interferometerEnclosureRelativeHumidity',OrderedDict([('longname','Relative Humidity measured in the Interferometer Enclosure'),('units', '%'),('precision', '1E-1')])),
+                     ('atmosphericPressure',OrderedDict([('longname','Observation atmospheric pressure in AERI electronics'),('units', 'millibars'),('precision', '1E-1')])),
+                     ('maxSampleStdDev',OrderedDict([('longname','Maximum Standard Deviation in Thermistor Channels 0..7'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('spareTemp2',OrderedDict([])),
+                     ('sceneMirrorAngle',OrderedDict([('longname','Scene mirror view angle in non-negative degrees, measured clockwise looking into interferometer window.'),('units', 'degrees'),('precision', '1E-2')])),
+                     ('sceneMirrorMotorStep',OrderedDict([('longname','Motor step value given to motor controller to achieve proper mirror positioning'),('units', 'count'),('precision', '1E0')])),
+                     ('spareTemp3',OrderedDict([])),
+                     ('maxPitch',OrderedDict([('longname','Maximum pitch of the interferometer during scan. Pitch axis is perpendicular to the axis of mirror rotation. Zero value indicates level.'),('units', 'degrees'),('precision', '1E0')])),
+                     ('maxRoll',OrderedDict([('longname','Maximum roll of the interferometer during scan. Roll axis is coincident to the axis of mirror rotation. Zero value indicates level.'),('units', 'degrees'),('precision', '1E0')])),
+                     ('hatchOpen',OrderedDict([('longname','Hatch status indicator, boolean with negative error conditions: 1:Open 0:Closed -1:Fault -2:Outside Valid Range -3:Neither Open Nor Closed'),('units', 'count'),('precision', '1E0')])),
+                     ('spareTemp6',OrderedDict([])),
+                     ('spareTemp7',OrderedDict([])),
+                     ('spareTemp8',OrderedDict([])),
+                     ('spareTemp9',OrderedDict([])),
+                     ('spareTemp10',OrderedDict([])),
+                     ('spareTemp11',OrderedDict([])),
+                     ('spareTemp12',OrderedDict([])),
+                     ('ABBmaxTempDiff',OrderedDict([('longname','Maximum Temperature Difference Between ABB Thermistors'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('HBBmaxTempDiff',OrderedDict([('longname','Maximum Temperature Difference Between HBB Thermistors'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('frontEndFanAirTempDiff',OrderedDict([('longname','Difference between frontEndFanAirHeatedTemp and frontEndFanAirUnheatedTemp; indicative of front end air flow.'),('units', 'degrees_Kelvin'),('precision', '1E-3')])),
+                     ('sceneMirPosEncoderDrift',OrderedDict([('longname','Difference between actual and ideal motor encoder values for current view; indicative of quality of the mirror positioning.'),('units', 'count'),('precision', '1E0')])),
+                     ('channelNumber',OrderedDict([('longname', 'Instrument data channel number'),('units', 'count'),('precision', '1E0')])),
+                     ('missingDataFlag',OrderedDict([('longname','Logical flag indicating that a data record is missing (true/false)'),('units', 'count'),('precision', '1E0')]))])
     
     return variables
 

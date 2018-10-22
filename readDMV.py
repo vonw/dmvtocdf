@@ -31,6 +31,26 @@ def readDMV(filename):
     # Determines type of file from extension.
     ext = filename.split('.')[-1]
     
+    # Determine the set of housekeeping variables from ohwhio.py based on the type of DMV file (extension).
+    if((ext=='RNC') | (ext=='rnc')):
+        variables   = getDMVformat(ext)
+        nvars       = 79
+        skipValues1 = 14
+        skipValues2 = 22
+    elif((ext=='RLC') | (ext=='rlc')):
+        variables   = getDMVformat(ext)
+        nvars       = 79
+        skipValues1 = 14
+        skipValues2 = 15
+    elif((ext=='CXS') | (ext=='cxs')):
+        variables   = getDMVformat(ext)
+        nvars       = 71
+        skipValues1 = 0
+        skipValues2 = 0
+    else:
+        print('ERROR: Incorrect file type. Try again...')
+        return {}
+    
     # Opens the DMV file.
     f = open(filename,'rb')
     
@@ -49,53 +69,20 @@ def readDMV(filename):
     ID = f.read(12).decode('utf-8')
     #f.seek(12,1)    # Skip the 12-byte identifier, "SSECRGD     ".
     sizeTOC = np.fromfile(f,np.int32,1)[0]
-    if(sizeTOC == 40):
-        # dependent data information
-        sizeDependentRecord     = np.fromfile(f,np.int32,1)[0]
-        formatDependentRecord   = np.fromfile(f,np.int32,1)[0]
-        scalingFactorLog        = np.fromfile(f,np.int32,1)[0]
-        dependentPrecisionLog   = np.fromfile(f,np.int32,1)[0]
+    if(sizeTOC == 40):   # RNC, RLC, ...
+        # dependent data information for single-variable file.
+        sizeDependentRecord         = np.fromfile(f,np.int32,1)[0]
+        formatDependentRecord       = np.fromfile(f,np.int32,1)[0]
+        scalingFactorLog            = np.fromfile(f,np.int32,1)[0]
+        dependentPrecisionLog       = np.fromfile(f,np.int32,1)[0]
         # independent data information
-        independentMinimum      = np.fromfile(f,np.float64,1)[0]
-        independentMaximum      = np.fromfile(f,np.float64,1)[0]
-        independentPrecisionLog = np.fromfile(f,np.int32,1)[0]
-    elif(sizeTOC == 48):
-        # dependent data information
-        sizeDependentRecord     = np.fromfile(f,np.int32,1)[0]
-        formatDependentRecord   = np.fromfile(f,np.int32,1)[0]
-        scalingFactorLog        = np.fromfile(f,np.int32,1)[0]
-        dependentPrecisionLog   = np.fromfile(f,np.int32,1)[0]
-        # independent data information
-        independentMinimum      = np.fromfile(f,np.float64,1)[0]
-        independentMaximum      = np.fromfile(f,np.float64,1)[0]
-        independentPrecisionLog = np.fromfile(f,np.int32,1)[0]
-        # additional data to support multiple variables
-        identifier              = np.fromfile(f,np.int32,1)[0]
-        Continuation            = np.fromfile(f,np.int32,1)[0]
-    else:
-        print('Erroneous size of Table of Contents!! Something is strange with your DMV file!!')
-        return(sizeTOC)
-    
-    # Determine the set of housekeeping variables from ohwhio.py based on the type of DMV file (extension).
-    if((ext=='RNC') | (ext=='rnc')):
-        variables = getDMVformat(formatDependentRecord)
-        nvars = 79
-        skipValues1          = 14
-        skipValues2          = 22
-    elif((ext=='RLC') | (ext=='rlc')):
-        variables = getDMVformat(formatDependentRecord)
-        nvars = 79
-        skipValues1          = 14
-        skipValues2          = 15
-    else:
-        print('ERROR: Incorrect file type. Try again...')
-        return {}
-    
-
-    # CHECK THIS OUT; IT MAY NOT BE GENERAL FOR ALL DMV FILE TYPES...
-    numberOfDependentAttributes = np.fromfile(f,np.int32,1)[0]
-    numberOfDependentVariables  = int(numberOfDependentAttributes / 4)
-    for var in range(numberOfDependentVariables):
+        independentMinimum          = np.fromfile(f,np.float64,1)[0]
+        independentMaximum          = np.fromfile(f,np.float64,1)[0]
+        independentPrecisionLog     = np.fromfile(f,np.int32,1)[0]
+        # number of attributes for next section.
+        numberOfDependentAttributes = np.fromfile(f,np.int32,1)[0]
+        numberOfDependentVariables  = 1
+        # Now read the attributes for the single variable.
         # Variable name
         nbytes       = np.fromfile(f,np.int32,1)[0]
         variableName = f.read(nbytes).decode('utf-8')
@@ -108,13 +95,56 @@ def readDMV(filename):
         # Units
         nbytes       = np.fromfile(f,np.int32,1)[0]
         units        = f.read(nbytes).decode('utf-8')
-        # Precision - THIS IS hard-wired for now because the precision is NOT contained in the DMV file.
-        precision    = str(0.5 * 10**dependentPrecisionLog)  
+        # Precision
+        precision    = "{:.0E}".format(10**dependentPrecisionLog)  
         # Now add this to the data variable dictionary.
         variables.update({variableName: OrderedDict([('longname',  longname),
                                                      ('units',     units   ),
-                                                     ('precision', precision)])})
-
+                                                     ('precision', precision)])})        
+    elif(sizeTOC == 48):  # CXS, CSV, CVS, UVS, SUM, ...
+        Continuation  = -1    # Non-zero to start loop.
+        while(Continuation):
+            # dependent data information
+            sizeDependentRecord     = np.fromfile(f,np.int32,1)[0]
+            formatDependentRecord   = np.fromfile(f,np.int32,1)[0]
+            scalingFactorLog        = np.fromfile(f,np.int32,1)[0]
+            dependentPrecisionLog   = np.fromfile(f,np.int32,1)[0]
+            # independent data information
+            independentMinimum      = np.fromfile(f,np.float64,1)[0]
+            independentMaximum      = np.fromfile(f,np.float64,1)[0]
+            independentPrecisionLog = np.fromfile(f,np.int32,1)[0]
+            # additional data to support multiple variables
+            identifier              = np.fromfile(f,np.int32,1)[0]
+            Continuation            = np.fromfile(f,np.int32,1)[0]
+            # number of attributes for next section.
+            numberOfDependentAttributes = np.fromfile(f,np.int32,1)[0]
+            numberOfDependentVariables  = identifier + Continuation
+            # Now read the attributes for the single variable.
+            # Variable name
+            nbytes        = np.fromfile(f,np.int32,1)[0]
+            variableName  = f.read(nbytes).decode('utf-8')
+            # Short name
+            nbytes        = np.fromfile(f,np.int32,1)[0]
+            shortname     = f.read(nbytes).decode('utf-8')
+            # Short name
+            nbytes        = np.fromfile(f,np.int32,1)[0]
+            longname      = f.read(nbytes).decode('utf-8')
+            # Units
+            nbytes        = np.fromfile(f,np.int32,1)[0]
+            units         = f.read(nbytes).decode('utf-8')
+            # Precision
+            precision     = "{:.0E}".format(10**dependentPrecisionLog)  
+            # Now add this to the data variable dictionary.
+            variables.update({variableName: OrderedDict([('longname',  longname),
+                                                         ('units',     units   ),
+                                                         ('precision', precision)])})        
+    else:
+        print('Erroneous size of Table of Contents!! Something is strange with your DMV file!!')
+        return(sizeTOC)
+    
+    # Create a list of the new dependent variables to add; used later to add data.
+    variableNames = [list(variables.items())[i][0] for i in np.arange(-1*(identifier+Continuation),0)]
+    
     # Read the next 4 bytes; not sure what these bytes are, but they aren't part of the data records.
     nbytes       = np.fromfile(f,np.int32,1)[0]
     tail = np.fromfile(f,np.int32,nbytes)
@@ -123,15 +153,22 @@ def readDMV(filename):
     bwn = independentMinimum
     ewn = independentMaximum
     nwn = int(sizeDependentRecord/4)
+    # Determine current position in file, which is now at the beginning of the data records.
+    beginningOfData = f.tell()
     # Determine number of data records for each time step.
     #       factor of 5 is the number of measurements: BB1-BB2-scene-BB2-BB1
     #       nwn is the number of elements in the spectrum.
     #       factor of 4 is the number of bytes in each number.
-    recordSize          = ( (nvars*5) + skipValues1 + (nvars*5) + skipValues2 + nwn ) * 4
+    if((ext=='RNC') | (ext=='rnc') | (ext=='RLC') | (ext=='rlc')):
+        recordSize     = ( (nvars*5) + skipValues1 + (nvars*5) + skipValues2 + nwn ) * 4
+        variableOffset = (nvars*4) + (nvars+skipValues1) + (nvars*4)
+        dataOffset     = [(nvars*4) + (nvars+skipValues1) + (nvars*4) + (nvars+skipValues2)]
+    elif((ext=='CXS') | (ext=='cxs')):
+        recordSize     = (nvars + nwn * numberOfDependentVariables) * 4
+        variableOffset = 0
+        dataOffset     = [nvars, nvars + nwn]
     numberOfRecords     = int((eof-headerSize+1)/recordSize)
     numberOfVariables   = int(recordSize/4)
-    variableOffset      = (nvars*4) + (nvars+skipValues1) + (nvars*4)
-    dataOffset          = (nvars*4) + (nvars+skipValues1) + (nvars*4) + (nvars+skipValues2)
     
     # Read data in as a float32 array; all RNC variables are float32.
     arr  = np.fromfile(f,np.float32)
@@ -152,18 +189,10 @@ def readDMV(filename):
     
     # Creates an xarray dataset from the Pandas dataframe.
     ds = xr.Dataset().from_dataframe(df)
+    # Adds attributes to each variable.
     for variable in variables: 
         for attribute in variables[variable]:
             ds[variable].attrs[attribute] = variables[variable][attribute]
-    # DON'T FORGET TO CREATE UNIQUE ATTRIBUTES THAT DEPEND ON DATE AND TIME!!
-    #             ('time_offset',
-    #              OrderedDict([('longname', 'Time offset from base_time')])),
-    #             ('wnum1',
-    #              OrderedDict([('longname',
-    #                            'Wave number in reciprocal centimeters'),
-    #                           ('units', 'centimeter^-1'),
-    #                           ('precision', '1E6'),
-    #                           ('range_of_values', '[ 520.237, 1799.856]')])),
     # Global attributes
     ds['FileHistory']                   = FileHistory
     # base_time
@@ -182,18 +211,23 @@ def readDMV(filename):
     ds['wnum1'].attrs['precision']      = '1E-4'
     ds['wnum1'].attrs['range_of_values']       = '[ ' + str(bwn) + ', ' + str(ewn) + ' ]'
     
-    if((ext=='RNC') | (ext=='rnc')):
-        # mean_rad
-        ds['mean_rad'] = xr.DataArray(np.array([arr[int((record*recordSize/4)+dataOffset):int((record*recordSize/4)+dataOffset+nwn)] for record in range(numberOfRecords)]), 
+    # Add data for dependent variables.
+    for variable, offset in zip(variableNames, dataOffset):
+        ds[variable] = xr.DataArray(np.array([arr[int((record*recordSize/4)+offset):int((record*recordSize/4)+offset+nwn)] for record in range(numberOfRecords)]), 
                             coords=[df.index,wnum1],
                             dims=['time','wnum1'])
-    elif((ext=='RLC') | (ext=='rlc')):
-        # averageRadiance
-        ds['averageRadiance'] = xr.DataArray(np.array([arr[int((record*recordSize/4)+dataOffset):int((record*recordSize/4)+dataOffset+nwn)] for record in range(numberOfRecords)]), 
-                            coords=[df.index,wnum1],
-                            dims=['time','wnum1'])
-    else:
-        print('ERROR: Incorrect file type. Try again...')
-        return {}
+#    if((ext=='RNC') | (ext=='rnc')):
+#        # mean_rad
+#        ds['mean_rad'] = xr.DataArray(np.array([arr[int((record*recordSize/4)+dataOffset):int((record*recordSize/4)+dataOffset+nwn)] for record in range(numberOfRecords)]), 
+#                            coords=[df.index,wnum1],
+#                            dims=['time','wnum1'])
+#    elif((ext=='RLC') | (ext=='rlc')):
+#        # averageRadiance
+#        ds['averageRadiance'] = xr.DataArray(np.array([arr[int((record*recordSize/4)+dataOffset):int((record*recordSize/4)+dataOffset+nwn)] for record in range(numberOfRecords)]), 
+#                            coords=[df.index,wnum1],
+#                            dims=['time','wnum1'])
+#    else:
+#        print('ERROR: Incorrect file type. Try again...')
+#        return {}
     
     return(ds)
