@@ -1,9 +1,9 @@
 def readDMV(filename):
     """
-    First attempt to create a reader for SSEC DMV binary files that is 
-    "pure Python". This function isn't complete yet, because I was unable 
-    to determine how to extract the information for the wavenumber grid for
-    the various file types (RLC, RNC, CXS. SUM). So there is work yet to do...
+    Reader for SSEC DMV binary files using "pure Python". This function 
+    is currently capable of reading RNC, RLC, and CXS files, but not SUM files.
+    The function returns an xarray Dataset that contains various data
+    variables and metadata for those variables.
     
     To use this function, try the steps below:
         For RNC file
@@ -25,6 +25,9 @@ def readDMV(filename):
         Von P. Walden
         Washington State University
         7 August 2018
+
+        Updates:
+        15 August 2019 - Updated documentation within this function.
     """
     import numpy       as     np
     import pandas      as     pd
