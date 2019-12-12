@@ -42,7 +42,11 @@ def readDMV(filename):
     if((ext=='RNC') | (ext=='rnc')):
         variables          = getDMVformat(ext)
         dependentVariables = ['mean_rad']
-        nvars              = 79
+        channel = filename.split('.')[0][-1]
+        if channel=='1':
+            nvars          = 79
+        else:
+            nvars          = 71
         skipValues1        = 14
         skipValues2        = 22
     elif((ext=='RLC') | (ext=='rlc')):
