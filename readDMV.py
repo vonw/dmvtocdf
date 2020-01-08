@@ -66,30 +66,39 @@ def readDMV(filename):
             scanDirection = 'Backward'
         else:
             scanDirection = 'Forward'
-        dependentVariables = ['Ch' + channel + scanDirection + 'ScanRealPartCounts', 
+        dependentVariables = ['Ch' + channel + scanDirection + 'ScanRealPartCounts',
                               'Ch' + channel + scanDirection + 'ScanImagPartCounts']
+    elif((ext=='SUM') | (ext=='sum')):
+        variables          = getDMVformat(ext)
+# TODO: Determine these variables for SUM files. Note that they will depend on the channel number.
+#
+#        dependentVariables = ['mean_rad']
+#        channel = filename.split('.')[0][-1]
+        nvars          = 79
+        skipValues1        = 14
+#        skipValues2        = 22
     else:
         print('ERROR: Incorrect file type. Try again...')
         return {}
     
     # Opens the DMV file.
-    f = open(filename,'rb')
-    
+    f = open(filename, 'rb')
+
     # Determine the file size by searching for the end-of-file; eof.
-    eof = f.seek(-1,2)     # go to the file end and record byte value
-    
+    eof = f.seek(-1, 2)  # go to the file end and record byte value
+
     # Determine header size, then skip to beginning of data records.
     f.seek(0)
-    
+
     # Read the header.
-    headerSize  = int(f.readline().decode('utf-8'))
+    headerSize = int(f.readline().decode('utf-8'))
     f.seek(0)
     FileHistory = f.read(headerSize).decode('utf-8')
-    
+
     # Decode new variables that are associated with the data in the particular file.
     ID = f.read(12).decode('utf-8')
-    #f.seek(12,1)    # Skip the 12-byte identifier, "SSECRGD     ".
-    sizeTOC = np.fromfile(f,np.int32,1)[0]
+    # f.seek(12,1)    # Skip the 12-byte identifier, "SSECRGD     ".
+    sizeTOC = np.fromfile(f, np.int32, 1)[0]
     records = {}
     if(sizeTOC == 40):   # RNC, RLC, ...
         # dependent data information for single-variable file.
@@ -216,6 +225,10 @@ def readDMV(filename):
         recordSize     = (nvars + nwn * 2) * 4 + extraBytes
         variableOffset = 0
         dataOffset     = [nvars, nvars + nwn]
+    elif  ((ext=='SUM') | (ext=='sum')):
+        recordSize     = ( (nvars*5) + skipValues1 + (nvars*5) + skipValues2 + nwn ) * 4
+        variableOffset = (nvars*4) + (nvars+skipValues1) + (nvars*4)
+        dataOffset     = [(nvars*4) + (nvars+skipValues1) + (nvars*4) + (nvars+skipValues2)]
     numberOfRecords = int((eof-headerSize+1)/recordSize)
     numberOfValues  = int(recordSize/4)
     
