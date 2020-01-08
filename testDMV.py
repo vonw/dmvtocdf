@@ -1,4 +1,4 @@
-from rDMV import readDMV
+from readDMV import readDMV
 import matplotlib.pyplot as plt
 
 # RNC
