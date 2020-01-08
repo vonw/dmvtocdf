@@ -18,8 +18,13 @@ def readDMV(filename):
             from readDMV import readDMV
             readDMV('160602F1.CXS')
 
+        For CXV file
+            from readDMV import readDMV
+            readDMV('160602F1.CXV')
+
         For SUM file
-            more work to do to decode this type of file...
+            from readDMV import readDMV
+            readDMV('160602.SUM')
 
     Written by:
         Von P. Walden
@@ -28,6 +33,9 @@ def readDMV(filename):
 
         Updates:
         15 August 2019 - Updated documentation within this function.
+         8 January 2020- Major update (v2.0): 
+            1) create new functions, 
+            2) added support for CXV and SUM files.
     """
     import numpy as np
     import pandas as pd
