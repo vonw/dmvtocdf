@@ -1,7 +1,8 @@
+# %% Imports
 from readDMV import readDMV
 import matplotlib.pyplot as plt
 
-# RNC
+# %% RNC
 c1 = readDMV('/Users/vonw/data/paeri/raw/AE160201/160201C1.RNC')
 plt.figure()
 c1.mean_rad[0].plot()
@@ -14,7 +15,7 @@ c2.mean_rad[0].plot()
 c2.mean_rad[-1].plot()
 plt.show()
 
-# RLC
+# %% RLC
 b1 = readDMV('/Users/vonw/data/paeri/reprocessed/AE110602/110602B1.RLC')
 plt.figure()
 b1.atmosphericRadiance[0].plot()
@@ -51,7 +52,7 @@ c2.averageRadiance[0].plot()
 c2.averageRadiance[-1].plot()
 plt.show()
 
-# CXS
+# %% CXS
 b1 = readDMV('/Users/vonw/data/paeri/reprocessed/AE110602/110602B1.CXS')
 plt.figure()
 b1.Ch1BackwardScanRealPartCounts[0].plot()
@@ -84,7 +85,7 @@ f2.Ch2ForwardScanRealPartCounts[-1].plot()
 f2.Ch2ForwardScanImagPartCounts[-1].plot()
 plt.show()
 
-# CXV
+# %% CXV
 b1 = readDMV('/Users/vonw/data/paeri/reprocessed/AE110602/110602B1.CXV')
 plt.figure()
 b1.RealPartCounts[0].plot()
@@ -101,7 +102,7 @@ f1.RealPartCounts[-1].plot()
 f1.ImagPartCounts[-1].plot()
 plt.show()
 
-# SUM
+# %% SUM
 sm = readDMV('/Users/vonw/data/paeri/reprocessed/AE110602/110602.SUM')
 plt.figure()
 sm.ABBapexTemp.plot()

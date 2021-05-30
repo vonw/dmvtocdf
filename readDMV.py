@@ -157,13 +157,13 @@ def readDMV(filename):
                 numberOfDependentVariableBytes is the cumulative number of bytes for all dependent variables
                 factor of 4 is the number of bytes in each number.
         '''
-        ext = filename.split('.')[-1]
+        ext    = filename.split('.')[-1]
 
         # Determine the cumulative number of bytes in the dependent variables.
         numberOfDependentVariableBytes = np.array([dependentVariableRecords[v]['sizeDependentRecord'] for v in dependentVariableRecords]).sum()
 
         # Determine the record size, variable offset and data offset based on file type.
-# ....RNC ######################################################################################################
+        # ....RNC ######################################################################################################
         if ((ext == 'RNC') | (ext == 'rnc')):
             channel = filename.split('.')[0][-1]
             if channel == '1':
@@ -176,7 +176,7 @@ def readDMV(filename):
             recordSize = ((nvars * 5) + nvarsExtra1 + (nvars * 5) + nvarsExtra2) * 4 + numberOfDependentVariableBytes
             variableOffset = (nvars * 4) + (nvars + nvarsExtra1) + (nvars * 4)
             dataOffset = [(nvars * 4) + (nvars + nvarsExtra1) + (nvars * 4) + (nvars + nvarsExtra2)]
-# ....RLC ######################################################################################################
+        # ....RLC ######################################################################################################
         elif ((ext == 'RLC') | (ext == 'rlc')):
             channel = filename.split('.')[0][-1]
             typ = filename.split('.')[0][-2:-1]
@@ -208,7 +208,7 @@ def readDMV(filename):
                 recordSize = ((nvars * 4) + (nvars + nvarsExtra1) + (nvars * 4) + (nvars + nvarsExtra2)) * 4 + numberOfDependentVariableBytes
                 variableOffset = (nvars * 4) + (nvars + nvarsExtra1) + (nvars * 4)
                 dataOffset = [(nvars * 4) + (nvars + nvarsExtra1) + (nvars * 4) + (nvars + nvarsExtra2)]
-# ....CXS ######################################################################################################
+        # ....CXS ######################################################################################################
         elif ((ext == 'CXS') | (ext == 'cxs')):
             nvars = 71
             nvarsExtra1 = 0
@@ -238,7 +238,7 @@ def readDMV(filename):
             for v in dependentVariableRecords:
                 dataOffset.append(dataOffset[-1] + int(dependentVariableRecords[v]['sizeDependentRecord']/4))
             dataOffset.pop();
-# ....CXV ######################################################################################################
+        # ....CXV ######################################################################################################
         elif ((ext == 'CXV') | (ext == 'cxv')):
             nvars = 79
             nvarsExtra1 = 0
@@ -268,10 +268,20 @@ def readDMV(filename):
             for v in dependentVariableRecords:
                 dataOffset.append(dataOffset[-1] + int(dependentVariableRecords[v]['sizeDependentRecord']/4))
             dataOffset.pop();
-# ....SUM ######################################################################################################
+        # ....SUM ######################################################################################################
         elif ((ext == 'SUM') | (ext == 'sum')):
+            # Handles a special case where the format of the SUM files changed
+            #   probably because AERI.xml was changed during ICECAPS.
+            yy = filename.split('.')[-2][-6:-4]
+            if int(yy)>96:
+                yymmdd = '19' + filename.split('.')[-2][-6:]
+            else:
+                yymmdd = '20' + filename.split('.')[-2][-6:]
+            if pd.to_datetime(yymmdd) < pd.to_datetime('20110707'):
+                recordSize = 9776
+            else:
+                recordSize = 9744
             nvars = 144
-            recordSize = 9776
             variableOffset = 1479
             dataOffset = [variableOffset + nvars]
             for v in dependentVariableRecords:
@@ -292,7 +302,6 @@ def readDMV(filename):
                 'numberOfVariables': nvars
                 }
 
-# Todo: Create a float64 variable in the xarray dataset (and for the netcdf file).
     def determineWavenumberScales(filename):
         ext = filename.split('.')[-1]
         vs = [variable for variable in dependentVariableRecords]
@@ -349,7 +358,6 @@ def readDMV(filename):
     dependentVariables, dependentVariableRecords = readTOC(sizeTOC)
 
     # Determine independent variables.
-    ext = filename.split('.')[-1]
     variables, wavenumberScales = getDMVformat(filename)
     variables.update(dependentVariables)    # Append dependent variables to list of variables
 
