@@ -115,7 +115,7 @@ def getDMVformat(filename):
                      ('originalInterferogramSize',OrderedDict([('longname','Size of buffer holding initial spectrum'),('units', '32-bit words'),('precision', '1E0')])),
                      ('expandedInterferogramSize',OrderedDict([('longname','Size of buffer holding expanded spectrum before interpolation'),('units', '32-bit words'),('precision', '1E0')]))])
         wavenumberScales = {'mean_rad': 'wnum1'}
-    elif((extension=='RLC') | (extension=='rlc')):
+    elif((extension=='RLC') | (extension=='rlc') | (extension=='RFC') | (extension=='rfc')):
         variables = OrderedDict([
                      ('Time',OrderedDict([('longname','Time at center of AERI sky observation period'),('precision', '1E-4')])),
                      ('AERIunitNumber',OrderedDict([('longname', 'AERI instrument unit serial number'), ('units', 'count'),('precision', '1E0')])),

@@ -1,7 +1,7 @@
 def readDMV(filename):
     """
     Reader for SSEC DMV binary files using "pure Python". This function
-    is currently capable of reading RNC, RLC, and CXS files, but not SUM files.
+    is currently capable of reading RNC, RFC, RLC, and CXS files, but not SUM files.
     The function returns an xarray Dataset that contains various data
     variables and metadata for those variables.
 
@@ -9,6 +9,10 @@ def readDMV(filename):
         For RNC file
             from readDMV import readDMV
             readDMV('160602C1.RNC')
+
+        For RFC file
+            from readDMV import readDMV
+            readDMV('160602C1.RFC')
 
         For RLC file
             from readDMV import readDMV
@@ -36,6 +40,7 @@ def readDMV(filename):
          8 January 2020- Major update (v2.0): 
             1) create new functions, 
             2) added support for CXV and SUM files.
+         1 August 2021 - Added support for RFC files.
     """
     import numpy as np
     import pandas as pd
@@ -46,7 +51,7 @@ def readDMV(filename):
     def readTOC(sizeTOC):
         dependentVariables = OrderedDict({})
         dependentVariableRecords = OrderedDict({})
-        if (sizeTOC == 40):  # RNC, RLC, ...
+        if (sizeTOC == 40):  # RNC, RFC, RLC, ...
             # dependent data information for single-variable file.
             sizeDependentRecord = np.fromfile(f, np.int32, 1)[0]
             formatDependentRecord = np.fromfile(f, np.int32, 1)[0]
@@ -176,8 +181,8 @@ def readDMV(filename):
             recordSize = ((nvars * 5) + nvarsExtra1 + (nvars * 5) + nvarsExtra2) * 4 + numberOfDependentVariableBytes
             variableOffset = (nvars * 4) + (nvars + nvarsExtra1) + (nvars * 4)
             dataOffset = [(nvars * 4) + (nvars + nvarsExtra1) + (nvars * 4) + (nvars + nvarsExtra2)]
-        # ....RLC ######################################################################################################
-        elif ((ext == 'RLC') | (ext == 'rlc')):
+        # ....RFC and RLC ######################################################################################################
+        elif ((ext == 'RLC') | (ext == 'rlc') | (ext == 'RFC') | (ext == 'rfc')):
             channel = filename.split('.')[0][-1]
             typ = filename.split('.')[0][-2:-1]
             if (typ == 'B'):
@@ -306,7 +311,7 @@ def readDMV(filename):
         ext = filename.split('.')[-1]
         vs = [variable for variable in dependentVariableRecords]
 
-        if ((ext == 'RNC') | (ext == 'rnc') | (ext == 'RLC') | (ext == 'rlc') | (ext == 'CXS') | (ext == 'cxs') | (ext == 'CXV') | (ext == 'cxv')):
+        if ((ext == 'RNC') | (ext == 'rnc') | (ext == 'RFC') | (ext == 'rfc') | (ext == 'RLC') | (ext == 'rlc') | (ext == 'CXS') | (ext == 'cxs') | (ext == 'CXV') | (ext == 'cxv')):
             v = vs[0]
             bwn = dependentVariableRecords[v]['independentMinimum']
             ewn = dependentVariableRecords[v]['independentMaximum']
