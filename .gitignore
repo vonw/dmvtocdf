@@ -2,3 +2,4 @@ ohwhio.cpython-36.pyc
 readDMV.cpython-36.pyc
 *.pyc
 .idea/misc.xml
+.DS_Store
