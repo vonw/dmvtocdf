@@ -47,6 +47,10 @@ def readDMV(filename):
     import xarray as xr
     from collections import OrderedDict
     from ohwhio import getDMVformat
+    
+    # Suppress performance warnings from Pandas, vpw 231112
+    import warnings
+    warnings.filterwarnings('ignore')
 
     def readTOC(sizeTOC):
         dependentVariables = OrderedDict({})
